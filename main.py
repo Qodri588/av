@@ -21,11 +21,17 @@ def _cli_parser() -> argparse.ArgumentParser:
                         help="Override the resolution saved in the template")
     parser.add_argument("--fps", type=int, choices=(30, 60),
                         help="Override the FPS saved in the template")
+    parser.add_argument("--supersampling", type=int, choices=(1, 2), default=2,
+                        help="Render quality multiplier (1 is faster)")
+    parser.add_argument("--duration", type=float,
+                        help="Render only the first N seconds (useful for tests)")
     return parser
 
 
 def cli_main(argv: list[str]) -> int:
     args = _cli_parser().parse_args(argv)
+    if args.duration is not None and args.duration <= 0:
+        raise ValueError("Duration must be greater than zero")
     from config.defaults import CQT_BINS_PER_OCTAVE
     from core.audio import AudioFile
     from core.template import load_template
@@ -75,7 +81,8 @@ def cli_main(argv: list[str]) -> int:
         use_cqt=bool(settings.get("use_cqt", False)),
         bins_per_octave=int(settings.get("bins_per_octave", CQT_BINS_PER_OCTAVE)),
         bg_image_path=bg_path, center_image_path=center_image,
-        output_path=str(output_path), progress_cb=progress,
+        output_path=str(output_path), supersampling=args.supersampling,
+        max_duration=args.duration, progress_cb=progress,
     )
     result = exporter.export()
     print(f"\nExport complete: {result}")

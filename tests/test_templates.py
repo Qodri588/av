@@ -78,11 +78,14 @@ def test_cli_accepts_colab_overrides():
     args = _cli_parser().parse_args([
         "--cli", "template.json", "song.wav", "--bg", "background.png",
         "--center", "logo.png", "--resolution", "720p", "--fps", "30",
+        "--supersampling", "1", "--duration", "10",
     ])
 
     assert args.center == "logo.png"
     assert args.resolution == "720p"
     assert args.fps == 30
+    assert args.supersampling == 1
+    assert args.duration == 10
 
 
 def test_load_template_accepts_windows_path_separators(tmp_path, monkeypatch):

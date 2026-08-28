@@ -30,6 +30,8 @@ class FFmpegExporter:
                  bg_image_path: str | None = None,
                  center_image_path: str | None = None,
                  output_path: str | None = None,
+                 supersampling: int = 2,
+                 max_duration: float | None = None,
                  progress_cb: Callable[[int, int], None] = None):
         self.audio = audio
         self.lm = layer_manager
@@ -39,6 +41,7 @@ class FFmpegExporter:
         self.bg_image_path = bg_image_path
         self.center_image_path = center_image_path
         self.output_path = Path(output_path) if output_path else None
+        self.supersampling = max(1, int(supersampling))
         self.progress_cb = progress_cb
 
         self.hop_size = max(1, int(audio.sr / fps))
@@ -53,6 +56,9 @@ class FFmpegExporter:
             bins_per_octave=bins_per_octave,
         )
         self.total_frames = int(np.ceil(len(audio.mono) / self.hop_size))
+        if max_duration is not None:
+            self.total_frames = min(
+                self.total_frames, max(1, int(np.ceil(max_duration * fps))))
 
     def _build_ffmpeg_cmd(self, output_path: str) -> list[str]:
         return [
@@ -80,7 +86,8 @@ class FFmpegExporter:
         output.parent.mkdir(parents=True, exist_ok=True)
         out_path = str(output)
 
-        renderer = Renderer(self.width, self.height)
+        renderer = Renderer(
+            self.width, self.height, supersampling=self.supersampling)
         if self.bg_image_path:
             renderer.load_background(self.bg_image_path, fps=self.fps)
         if self.center_image_path:
