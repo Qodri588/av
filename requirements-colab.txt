@@ -3,3 +3,4 @@ numpy==2.2.6
 scipy==1.17.1
 soundfile==0.13.1
 Pillow==12.3.0
+PyOpenGL==3.1.6
