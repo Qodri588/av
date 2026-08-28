@@ -1,0 +1,15 @@
+{
+  "pythonPath": ".venv\\Scripts\\python.exe",
+  "venvPath": ".venv",
+  "include": ["main.py", "ui", "core", "render", "export", "config", "tests"],
+  "exclude": ["**/__pycache__", ".venv"],
+  "reportMissingImports": "error",
+  "reportUnusedCallResult": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownVariableType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnknownLambdaType": "none",
+  "reportUnknownParameterType": "none",
+  "reportMissingTypeArgument": "none",
+  "reportAttributeAccessIssue": "none"
+}

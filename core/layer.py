@@ -1,0 +1,295 @@
+"""Layer composition model for the audio visualizer.
+
+A composition is a stack of layers rendered bottom→top:
+  - one BGLayer (background image / colour + reactive zoom, locked at the bottom)
+  - up to MAX_VISUAL_LAYERS visual layers, each an independent instance of a viz mode
+
+Layer objects are pure configuration + identity. The per-layer mutable render
+state (audio history, PIL mode instances, FBO) lives renderer-side, keyed by
+Layer.id — see render/renderer.py:LayerState.
+"""
+from dataclasses import dataclass, field
+from itertools import count
+
+from config.defaults import (
+    NUM_BARS, MAX_BAR_HEIGHT, PULSE_INTENSITY, SENSITIVITY, PALETTES,
+    CIRCLE_RADIUS_RATIO, BAR_WIDTH, DEFAULT_BAR_SHAPE,
+    HALO_SINE_R_BASE, HALO_SINE_AMPLITUDE, HALO_SINE_N_POINTS,
+    HALO_SINE_GLOW_LAYERS, HALO_SINE_SMOOTHING_DECAY, HALO_SINE_FILL_OPACITY,
+    HALO_SINE_SPLINE_GAP, HALO_SINE_PIXEL_SIZE,
+    TUNNEL_SIDES, TUNNEL_RINGS, TUNNEL_SPEED, TUNNEL_KICK_ZOOM, TUNNEL_CHROMA,
+    TUNNEL_KICK_SENSITIVITY, TUNNEL_BASS_SPEED, TUNNEL_KICK_MODE,
+    TUNNEL_KICK_FREQ_LO, TUNNEL_KICK_FREQ_HI,
+    TUNNEL_KICK_THRESHOLD, TUNNEL_KICK_COOLDOWN,
+    NUKE_KICK_THRESHOLD, NUKE_SPEED, NUKE_LIFE, NUKE_WIDTH, NUKE_FLASH, NUKE_BG,
+    VOID_SPEED, VOID_PULL, VOID_RAYS, VOID_ARMS,
+    FLASH_INTENSITY, BG_PULSE_INTENSITY, VIZ_TYPES, DEFAULT_VIZ_TYPE,
+    VISUAL_PRESETS, DEFAULT_VIZ_PRESET,
+)
+
+MAX_VISUAL_LAYERS = 6
+MAX_TEXT_LAYERS = 20
+TEXT_MODE = 100
+IMAGE_MODE = 101
+PARTICLE_MODE = 102
+BLEND_ADDITIVE = "additive"
+BLEND_NORMAL   = "normal"
+
+_id_counter = count(1)
+
+
+def _default_palette() -> list:
+    return [list(c) for c in list(PALETTES.values())[0]]
+
+
+@dataclass
+class Layer:
+    """A single visual layer — an instance of a viz mode with its own transform."""
+    mode: int = DEFAULT_VIZ_TYPE        # viz_type
+    name: str = "Layer"
+    preset_name: str = ""
+
+    # ── Composition / transform ──
+    x: float = 0.0                      # NDC offset, 0 = centre
+    y: float = 0.0
+    scale: float = 1.0                  # 0.1 → 2.0
+    opacity: float = 1.0               # 0.0 → 1.0
+    blend_mode: str = BLEND_ADDITIVE
+    visible: bool = True
+    solo: bool = False
+
+    # ── Generic viz params ──
+    num_bars: int = NUM_BARS
+    max_bar_height: float = MAX_BAR_HEIGHT
+    circle_radius: float = CIRCLE_RADIUS_RATIO
+    bar_width: float = BAR_WIDTH
+    bar_shape: int = DEFAULT_BAR_SHAPE   # index into config.defaults.BAR_SHAPES
+    pulse_intensity: float = PULSE_INTENSITY
+    sensitivity: float = SENSITIVITY
+    rotation: float = 0.0              # radians
+    pal_mode: int = 0                  # 0 = amplitude, 1 = fréquence
+    mirror: bool = False
+    flash: bool = False
+    flash_intensity: float = FLASH_INTENSITY
+    palette: list = field(default_factory=_default_palette)
+    palette_name: str = field(default_factory=lambda: list(PALETTES.keys())[0])
+
+    # ── Text layer ──
+    text: str = "Text"
+    text_size: int = 72
+    text_color: tuple = (1.0, 1.0, 1.0)
+    text_opacity: float = 1.0
+    text_font: str = "arial.ttf"
+    text_font_label: str = "Arial"
+    text_bold: bool = False
+    text_italic: bool = False
+    text_align: str = "center"
+    text_letter_spacing: int = 0
+    text_line_spacing: int = 8
+    text_stroke: int = 0
+    text_stroke_color: tuple = (0.0, 0.0, 0.0)
+    text_rotation: float = 0.0
+    text_shadow: bool = False
+    text_shadow_color: tuple = (0.0, 0.0, 0.0)
+    text_shadow_x: int = 4
+    text_shadow_y: int = 4
+
+    # Image overlay
+    image_path: str | None = None
+    image_width: float = 0.35
+    image_height: float = 0.35
+    image_beat_reactive: bool = True
+    image_beat_intensity: float = 0.20
+
+    # Particle overlay (adapted from the Studio Canvas reference)
+    particle_count: int = 50
+    particle_speed: float = 1.0
+    particle_size: float = 3.0
+    particle_direction: str = "random"
+    particle_origin: str = "full"
+    particle_glossy: float = 0.0
+    particle_random_size: bool = False
+    particle_beat_reactive: bool = False
+    particle_reactive_source: str = "none"
+    particle_color_mode: str = "palette"
+    particle_colors: list = field(default_factory=lambda: [
+        [0.545, 0.361, 0.965], [0.133, 0.827, 0.933], [0.957, 0.447, 0.714],
+    ])
+
+    # ── Halo Sine / Flat Sine ──
+    halo_r_base: float = HALO_SINE_R_BASE
+    halo_amplitude: float = HALO_SINE_AMPLITUDE
+    halo_n_points: int = HALO_SINE_N_POINTS
+    halo_glow_layers: int = HALO_SINE_GLOW_LAYERS
+    halo_smoothing_decay: float = HALO_SINE_SMOOTHING_DECAY
+    halo_fill_opacity: float = HALO_SINE_FILL_OPACITY
+    halo_spline_gap: float = HALO_SINE_SPLINE_GAP
+    halo_pixel_size: int = HALO_SINE_PIXEL_SIZE
+
+    # ── Tunnel Arcade ──
+    tunnel_sides: int = TUNNEL_SIDES
+    tunnel_rings: int = TUNNEL_RINGS
+    tunnel_speed: float = TUNNEL_SPEED
+    tunnel_kick_zoom: float = TUNNEL_KICK_ZOOM
+    tunnel_chroma: float = TUNNEL_CHROMA
+    tunnel_kick_sensitivity: float = TUNNEL_KICK_SENSITIVITY
+    tunnel_bass_speed: float = TUNNEL_BASS_SPEED
+    tunnel_kick_mode: int = TUNNEL_KICK_MODE
+    tunnel_kick_freq_lo: int = TUNNEL_KICK_FREQ_LO
+    tunnel_kick_freq_hi: int = TUNNEL_KICK_FREQ_HI
+    tunnel_kick_threshold: float = TUNNEL_KICK_THRESHOLD / 100.0
+    tunnel_kick_cooldown: int = TUNNEL_KICK_COOLDOWN
+
+    # ── Nuclear Shockwave (mode 10) ──
+    nuke_kick_threshold: float = NUKE_KICK_THRESHOLD / 1000.0
+    nuke_speed: float = NUKE_SPEED
+    nuke_life: float = NUKE_LIFE
+    nuke_width: float = NUKE_WIDTH
+    nuke_flash: float = NUKE_FLASH
+    nuke_bg: float = NUKE_BG
+
+    # ── Void Pull (mode 11) ──
+    void_speed: float = VOID_SPEED
+    void_pull: float = VOID_PULL
+    void_rays: float = VOID_RAYS
+    void_arms: int = VOID_ARMS
+
+    id: int = field(default_factory=lambda: next(_id_counter))
+
+    def mode_name(self) -> str:
+        if self.mode in (TEXT_MODE, IMAGE_MODE, PARTICLE_MODE):
+            return self.name
+        if self.preset_name in VISUAL_PRESETS:
+            return self.preset_name
+        for name, idx in VIZ_TYPES.items():
+            if idx == self.mode:
+                return name
+        return f"Mode {self.mode}"
+
+
+@dataclass
+class BGLayer:
+    """Background layer — image (cover) or solid black, with bass-reactive zoom.
+
+    Locked at the bottom of the stack, blend mode forced to normal.
+    """
+    image_path: str | None = None
+    opacity: float = 1.0
+    zoom_reactive: bool = False
+    zoom_intensity: float = BG_PULSE_INTENSITY
+    fit_mode: int = 1                    # 0=fit, 1=cover, 2=manual crop
+    crop_zoom: float = 1.0
+    crop_x: float = 0.0
+    crop_y: float = 0.0
+    text: str = ""
+    text_size: int = 72
+    text_x: float = 0.5
+    text_y: float = 0.5
+    text_color: tuple = (1.0, 1.0, 1.0)
+    text_opacity: float = 1.0
+    text_font: str = "arial.ttf"
+    text_font_label: str = "Arial"
+    text_bold: bool = False
+    text_italic: bool = False
+    text_align: str = "center"
+    text_letter_spacing: int = 0
+    text_line_spacing: int = 8
+    text_stroke: int = 0
+    text_stroke_color: tuple = (0.0, 0.0, 0.0)
+    text_rotation: float = 0.0
+    text_shadow: bool = False
+    text_shadow_color: tuple = (0.0, 0.0, 0.0)
+    text_shadow_x: int = 4
+    text_shadow_y: int = 4
+    id: int = 0   # reserved id
+
+
+class LayerManager:
+    """Holds the BG layer + ordered visual layer stack and selection state."""
+
+    def __init__(self):
+        self.bg = BGLayer()
+        self.layers: list[Layer] = []
+        self._selected_id: int | None = None
+
+    # ── Stack management ──
+    def add_layer(self, mode: int = DEFAULT_VIZ_TYPE) -> Layer | None:
+        if sum(layer.mode not in (TEXT_MODE, IMAGE_MODE) for layer in self.layers) >= MAX_VISUAL_LAYERS:
+            return None
+        layer = Layer(mode=mode)
+        if mode == DEFAULT_VIZ_TYPE:
+            layer.preset_name = DEFAULT_VIZ_PRESET
+            for key, value in VISUAL_PRESETS[DEFAULT_VIZ_PRESET].items():
+                setattr(layer, key, value)
+        layer.name = layer.mode_name()
+        self.layers.append(layer)
+        self._selected_id = layer.id
+        return layer
+
+    def add_text_layer(self) -> Layer | None:
+        if sum(layer.mode == TEXT_MODE for layer in self.layers) >= MAX_TEXT_LAYERS:
+            return None
+        number = sum(layer.mode == TEXT_MODE for layer in self.layers) + 1
+        layer = Layer(mode=TEXT_MODE, name=f"Text {number}", text=f"Text {number}")
+        self.layers.append(layer)
+        self._selected_id = layer.id
+        return layer
+
+    def add_image_layer(self, path: str) -> Layer:
+        number = sum(layer.mode == IMAGE_MODE for layer in self.layers) + 1
+        layer = Layer(mode=IMAGE_MODE, name=f"Overlay {number}", image_path=path,
+                      blend_mode=BLEND_NORMAL)
+        self.layers.append(layer)
+        self._selected_id = layer.id
+        return layer
+
+    def add_particle_layer(self) -> Layer:
+        number = sum(layer.mode == PARTICLE_MODE for layer in self.layers) + 1
+        layer = Layer(mode=PARTICLE_MODE, name=f"Particles {number}",
+                      blend_mode=BLEND_NORMAL, opacity=0.90)
+        self.layers.append(layer)
+        self._selected_id = layer.id
+        return layer
+
+    def remove_layer(self, layer_id: int) -> None:
+        self.layers = [l for l in self.layers if l.id != layer_id]
+        if self._selected_id == layer_id:
+            self._selected_id = self.layers[-1].id if self.layers else None
+
+    def move_layer(self, from_idx: int, to_idx: int) -> None:
+        if not (0 <= from_idx < len(self.layers)):
+            return
+        to_idx = max(0, min(to_idx, len(self.layers) - 1))
+        layer = self.layers.pop(from_idx)
+        self.layers.insert(to_idx, layer)
+
+    def get(self, layer_id: int) -> Layer | None:
+        for l in self.layers:
+            if l.id == layer_id:
+                return l
+        return None
+
+    def index_of(self, layer_id: int) -> int:
+        for i, l in enumerate(self.layers):
+            if l.id == layer_id:
+                return i
+        return -1
+
+    # ── Selection ──
+    @property
+    def selected_id(self) -> int | None:
+        return self._selected_id
+
+    @selected_id.setter
+    def selected_id(self, value: int | None) -> None:
+        self._selected_id = value
+
+    def selected(self) -> Layer | None:
+        return self.get(self._selected_id) if self._selected_id is not None else None
+
+    # ── Render order ──
+    def active_layers(self) -> list[Layer]:
+        """Layers to render, bottom→top, honouring solo and visibility."""
+        soloed = [l for l in self.layers if l.solo]
+        pool = soloed if soloed else self.layers
+        return [l for l in pool if l.visible]
