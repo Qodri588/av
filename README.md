@@ -79,6 +79,8 @@ MGL_BACKEND=egl python main.py --cli template.json song.wav \
 For an interactive upload-and-render workflow, open `colab_render.ipynb` in
 Google Colab. It clones this repository, then lets you upload audio, template,
 background, and center image. It can also use `coba/temp.json` directly.
+The notebook installs the render-only `requirements-colab.txt`, whose NumPy pin
+is compatible with the Numba version preinstalled by Colab.
 
 The background is optional. Without an override, the image or video background
 saved in the template is used.
