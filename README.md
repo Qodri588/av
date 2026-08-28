@@ -82,6 +82,10 @@ background, and center image. It can also use `coba/temp.json` directly.
 The notebook installs the render-only `requirements-colab.txt`, whose NumPy pin
 is compatible with the Numba version preinstalled by Colab.
 
+Before running it, select **Runtime > Change runtime type > T4 GPU**. The
+notebook verifies `nvidia-smi`, forces NVIDIA's EGL vendor, prints the actual
+OpenGL vendor/renderer, and stops instead of silently rendering with llvmpipe.
+
 The background is optional. Without an override, the image or video background
 saved in the template is used.
 
