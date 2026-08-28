@@ -82,9 +82,9 @@ background, and center image. It can also use `coba/temp.json` directly.
 The notebook installs the render-only `requirements-colab.txt`, whose NumPy pin
 is compatible with the Numba version preinstalled by Colab.
 
-The notebook uses NVIDIA EGL when a GPU runtime is available and automatically
-falls back to Mesa CPU rendering otherwise. Its testing defaults are 720p,
-30 FPS, 1x supersampling, and the first 10 seconds of audio. Set
+The notebook uses CPU-only Mesa EGL and does not require a Colab GPU runtime.
+Its testing defaults are 720p, 30 FPS, 1x supersampling, and the first 10
+seconds of audio. Set
 `TEST_SECONDS = None` in the notebook to render the complete audio.
 
 The background is optional. Without an override, the image or video background
