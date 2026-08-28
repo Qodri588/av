@@ -28,6 +28,10 @@ def _portable_path(value: str | None, base: Path) -> str | None:
 def _resolved_path(value: str | None, base: Path) -> str | None:
     if not value:
         return None
+    # Templates are portable across Windows and POSIX.  pathlib on Linux does
+    # not otherwise recognize a backslash as a directory separator.
+    if os.sep == "/":
+        value = value.replace("\\", "/")
     path = Path(value)
     return str(path if path.is_absolute() else (base / path).resolve())
 

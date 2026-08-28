@@ -1,6 +1,7 @@
 import moderngl
 import numpy as np
 import math
+import os
 from collections import deque
 from pathlib import Path
 from PIL import Image, ImageColor, ImageDraw, ImageFilter, ImageFont
@@ -163,7 +164,11 @@ class Renderer:
         self._center_pil: "Image.Image | None" = None
 
         if ctx is None:
-            self.ctx = moderngl.create_standalone_context()
+            # Colab and other headless Linux runners have no X11 display.  Let
+            # callers select EGL while preserving the desktop default.
+            backend = os.environ.get("MGL_BACKEND")
+            self.ctx = moderngl.create_standalone_context(
+                **({"backend": backend} if backend else {}))
             self._owns_ctx = True
         else:
             self.ctx = ctx

@@ -1,0 +1,346 @@
+{
+  "version": 1,
+  "background": {
+    "image_path": "Codex Image Aug 28, 2026, 04_59_33 AM.png",
+    "opacity": 1.0,
+    "zoom_reactive": false,
+    "zoom_intensity": 0.5,
+    "fit_mode": 1,
+    "crop_zoom": 1.0,
+    "crop_x": 0.0,
+    "crop_y": 0.0,
+    "text": "",
+    "text_size": 72,
+    "text_x": 0.5,
+    "text_y": 0.5,
+    "text_color": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "text_opacity": 1.0,
+    "text_font": "arial.ttf",
+    "text_font_label": "Arial",
+    "text_bold": false,
+    "text_italic": false,
+    "text_align": "center",
+    "text_letter_spacing": 0,
+    "text_line_spacing": 8,
+    "text_stroke": 0,
+    "text_stroke_color": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "text_rotation": 0.0,
+    "text_shadow": false,
+    "text_shadow_color": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "text_shadow_x": 4,
+    "text_shadow_y": 4
+  },
+  "center_image_path": null,
+  "layers": [
+    {
+      "mode": 0,
+      "name": "Radial Classic",
+      "preset_name": "Radial Classic",
+      "x": 0.0,
+      "y": 0.0,
+      "scale": 1.0,
+      "opacity": 1.0,
+      "blend_mode": "additive",
+      "visible": true,
+      "solo": false,
+      "num_bars": 128,
+      "max_bar_height": 1.0,
+      "circle_radius": 0.18,
+      "bar_width": 0.6,
+      "bar_shape": 2,
+      "pulse_intensity": 1.0,
+      "sensitivity": 1.0,
+      "rotation": 0.0,
+      "pal_mode": 0,
+      "mirror": false,
+      "flash": false,
+      "flash_intensity": 0.5,
+      "palette": [
+        [
+          0.322,
+          0.0,
+          1.0
+        ],
+        [
+          0.627,
+          0.125,
+          0.941
+        ],
+        [
+          1.0,
+          0.0,
+          0.8
+        ],
+        [
+          1.0,
+          0.4,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "palette_name": "Violet / Magenta",
+      "text": "Text",
+      "text_size": 72,
+      "text_color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "text_opacity": 1.0,
+      "text_font": "arial.ttf",
+      "text_font_label": "Arial",
+      "text_bold": false,
+      "text_italic": false,
+      "text_align": "center",
+      "text_letter_spacing": 0,
+      "text_line_spacing": 8,
+      "text_stroke": 0,
+      "text_stroke_color": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "text_rotation": 0.0,
+      "text_shadow": false,
+      "text_shadow_color": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "text_shadow_x": 4,
+      "text_shadow_y": 4,
+      "image_path": null,
+      "image_width": 0.35,
+      "image_height": 0.35,
+      "image_beat_reactive": true,
+      "image_beat_intensity": 0.2,
+      "particle_count": 50,
+      "particle_speed": 1.0,
+      "particle_size": 3.0,
+      "particle_direction": "random",
+      "particle_origin": "full",
+      "particle_glossy": 0.0,
+      "particle_random_size": false,
+      "particle_beat_reactive": false,
+      "particle_reactive_source": "none",
+      "particle_color_mode": "palette",
+      "particle_colors": [
+        [
+          0.545,
+          0.361,
+          0.965
+        ],
+        [
+          0.133,
+          0.827,
+          0.933
+        ],
+        [
+          0.957,
+          0.447,
+          0.714
+        ]
+      ],
+      "halo_r_base": 0.35,
+      "halo_amplitude": 0.18,
+      "halo_n_points": 128,
+      "halo_glow_layers": 3,
+      "halo_smoothing_decay": 0.8,
+      "halo_fill_opacity": 0.0,
+      "halo_spline_gap": 1.4,
+      "halo_pixel_size": 1,
+      "tunnel_sides": 8,
+      "tunnel_rings": 4,
+      "tunnel_speed": 0.3,
+      "tunnel_kick_zoom": 1.0,
+      "tunnel_chroma": 1.0,
+      "tunnel_kick_sensitivity": 2.0,
+      "tunnel_bass_speed": 2.5,
+      "tunnel_kick_mode": 0,
+      "tunnel_kick_freq_lo": 0,
+      "tunnel_kick_freq_hi": 12,
+      "tunnel_kick_threshold": 2.5,
+      "tunnel_kick_cooldown": 20,
+      "nuke_kick_threshold": 0.03,
+      "nuke_speed": 0.95,
+      "nuke_life": 2.2,
+      "nuke_width": 1.0,
+      "nuke_flash": 0.6,
+      "nuke_bg": 1.0,
+      "void_speed": 0.1,
+      "void_pull": 0.6,
+      "void_rays": 2.8,
+      "void_arms": 3
+    },
+    {
+      "mode": 102,
+      "name": "Particles 1",
+      "preset_name": "",
+      "x": 0.0,
+      "y": 0.0,
+      "scale": 1.0,
+      "opacity": 0.9,
+      "blend_mode": "normal",
+      "visible": true,
+      "solo": false,
+      "num_bars": 128,
+      "max_bar_height": 1.0,
+      "circle_radius": 0.18,
+      "bar_width": 0.6,
+      "bar_shape": 2,
+      "pulse_intensity": 1.0,
+      "sensitivity": 1.0,
+      "rotation": 0.0,
+      "pal_mode": 0,
+      "mirror": false,
+      "flash": false,
+      "flash_intensity": 0.5,
+      "palette": [
+        [
+          0.322,
+          0.0,
+          1.0
+        ],
+        [
+          0.627,
+          0.125,
+          0.941
+        ],
+        [
+          1.0,
+          0.0,
+          0.8
+        ],
+        [
+          1.0,
+          0.4,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "palette_name": "Violet / Magenta",
+      "text": "Text",
+      "text_size": 72,
+      "text_color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "text_opacity": 1.0,
+      "text_font": "arial.ttf",
+      "text_font_label": "Arial",
+      "text_bold": false,
+      "text_italic": false,
+      "text_align": "center",
+      "text_letter_spacing": 0,
+      "text_line_spacing": 8,
+      "text_stroke": 0,
+      "text_stroke_color": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "text_rotation": 0.0,
+      "text_shadow": false,
+      "text_shadow_color": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "text_shadow_x": 4,
+      "text_shadow_y": 4,
+      "image_path": null,
+      "image_width": 0.35,
+      "image_height": 0.35,
+      "image_beat_reactive": true,
+      "image_beat_intensity": 0.2,
+      "particle_count": 50,
+      "particle_speed": 1.0,
+      "particle_size": 6.0,
+      "particle_direction": "random",
+      "particle_origin": "full",
+      "particle_glossy": 0.0,
+      "particle_random_size": false,
+      "particle_beat_reactive": false,
+      "particle_reactive_source": "none",
+      "particle_color_mode": "palette",
+      "particle_colors": [
+        [
+          0.545,
+          0.361,
+          0.965
+        ],
+        [
+          0.133,
+          0.827,
+          0.933
+        ],
+        [
+          0.957,
+          0.447,
+          0.714
+        ]
+      ],
+      "halo_r_base": 0.35,
+      "halo_amplitude": 0.18,
+      "halo_n_points": 128,
+      "halo_glow_layers": 3,
+      "halo_smoothing_decay": 0.8,
+      "halo_fill_opacity": 0.0,
+      "halo_spline_gap": 1.4,
+      "halo_pixel_size": 1,
+      "tunnel_sides": 8,
+      "tunnel_rings": 4,
+      "tunnel_speed": 0.3,
+      "tunnel_kick_zoom": 1.0,
+      "tunnel_chroma": 1.0,
+      "tunnel_kick_sensitivity": 2.0,
+      "tunnel_bass_speed": 2.5,
+      "tunnel_kick_mode": 0,
+      "tunnel_kick_freq_lo": 0,
+      "tunnel_kick_freq_hi": 12,
+      "tunnel_kick_threshold": 2.5,
+      "tunnel_kick_cooldown": 20,
+      "nuke_kick_threshold": 0.03,
+      "nuke_speed": 0.95,
+      "nuke_life": 2.2,
+      "nuke_width": 1.0,
+      "nuke_flash": 0.6,
+      "nuke_bg": 1.0,
+      "void_speed": 0.1,
+      "void_pull": 0.6,
+      "void_rays": 2.8,
+      "void_arms": 3
+    }
+  ],
+  "selected_layer": 1,
+  "settings": {
+    "resolution": "4K",
+    "fps": 60,
+    "smoothing_decay": 0.85,
+    "bass_split": 0.6,
+    "bass_split_hz": 300.0,
+    "use_cqt": false,
+    "bins_per_octave": 24
+  }
+}

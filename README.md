@@ -69,6 +69,17 @@ Or use explicit background/output flags:
 python main.py --cli template.toml song.wav --bg background.png -o output.mp4
 ```
 
+Headless Linux/Google Colab rendering uses EGL:
+
+```bash
+MGL_BACKEND=egl python main.py --cli template.json song.wav \
+  --bg background.png --center logo.png --resolution 1080p --fps 30 -o output.mp4
+```
+
+For an interactive upload-and-render workflow, open `colab_render.ipynb` in
+Google Colab. It clones this repository, then lets you upload audio, template,
+background, and center image. It can also use `coba/temp.json` directly.
+
 The background is optional. Without an override, the image or video background
 saved in the template is used.
 

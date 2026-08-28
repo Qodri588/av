@@ -72,3 +72,30 @@ def test_cli_accepts_positional_and_flag_forms():
             positional.output) == ("template.json", "song.wav", "bg.mp4", "result.mp4")
     assert flagged.background_option == "bg.png"
     assert flagged.output_option == "out.mp4"
+
+
+def test_cli_accepts_colab_overrides():
+    args = _cli_parser().parse_args([
+        "--cli", "template.json", "song.wav", "--bg", "background.png",
+        "--center", "logo.png", "--resolution", "720p", "--fps", "30",
+    ])
+
+    assert args.center == "logo.png"
+    assert args.resolution == "720p"
+    assert args.fps == 30
+
+
+def test_load_template_accepts_windows_path_separators(tmp_path, monkeypatch):
+    import core.template as template_module
+
+    template = tmp_path / "template.json"
+    template.write_text(
+        '{"version":1,"background":{"image_path":"assets\\\\bg.png"},'
+        '"center_image_path":null,"layers":[],"selected_layer":-1,"settings":{}}',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(template_module.os, "sep", "/")
+
+    loaded, _, _ = load_template(str(template))
+
+    assert loaded.bg.image_path == str((tmp_path / "assets" / "bg.png").resolve())

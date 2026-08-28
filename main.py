@@ -16,6 +16,11 @@ def _cli_parser() -> argparse.ArgumentParser:
                         help="Background image/video override")
     parser.add_argument("-o", "--output", dest="output_option",
                         help="Output MP4 path")
+    parser.add_argument("--center", help="Center image override")
+    parser.add_argument("--resolution", choices=("720p", "1080p", "4K"),
+                        help="Override the resolution saved in the template")
+    parser.add_argument("--fps", type=int, choices=(30, 60),
+                        help="Override the FPS saved in the template")
     return parser
 
 
@@ -38,6 +43,11 @@ def cli_main(argv: list[str]) -> int:
         background = str(Path(background).resolve())
         if not Path(background).is_file():
             raise FileNotFoundError(f"Background not found: {background}")
+    center = args.center
+    if center:
+        center = str(Path(center).resolve())
+        if not Path(center).is_file():
+            raise FileNotFoundError(f"Center image not found: {center}")
     if not output:
         output = str(Path.cwd() / f"{audio_path.stem}.mp4")
     output_path = Path(output).resolve()
@@ -48,6 +58,7 @@ def cli_main(argv: list[str]) -> int:
     if background:
         lm.bg.image_path = background
     bg_path = background or lm.bg.image_path
+    center_image = center or center_image
     audio = AudioFile(str(audio_path))
 
     def progress(current: int, total: int) -> None:
@@ -56,8 +67,8 @@ def cli_main(argv: list[str]) -> int:
 
     exporter = FFmpegExporter(
         audio=audio, layer_manager=lm,
-        resolution=str(settings.get("resolution", "1080p")),
-        fps=int(settings.get("fps", 60)),
+        resolution=args.resolution or str(settings.get("resolution", "1080p")),
+        fps=args.fps or int(settings.get("fps", 60)),
         smoothing_decay=float(settings.get("smoothing_decay", .85)),
         bass_split=float(settings.get("bass_split", .60)),
         bass_split_hz=float(settings.get("bass_split_hz", 300)),
